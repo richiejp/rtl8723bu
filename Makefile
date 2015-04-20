@@ -52,7 +52,8 @@ CONFIG_PNO_SUPPORT = n
 CONFIG_PNO_SET_DEBUG = n
 CONFIG_AP_WOWLAN = n
 ###################### Platform Related #######################
-CONFIG_PLATFORM_I386_PC = y
+CONFIG_PLATFORM_I386_PC = n
+CONFIG_PLATFORM_ARM = y
 ###############################################################
 
 CONFIG_DRVEXT_MODULE = n
@@ -295,6 +296,20 @@ MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
 INSTALL_PREFIX :=
 endif
 
+ifeq ($(CONFIG_PLATFORM_ARM), y)
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211
+EXTRA_CFLAGS += -DRTW_USE_CFG80211_STA_EVENT # only enable when kernel >= 3.2
+EXTRA_CFLAGS += -DCONFIG_P2P_IPS
+SUBARCH := arm
+ARCH ?= $(SUBARCH)
+CROSS_COMPILE ?=
+KVER  := $(shell uname -r)
+KSRC := /lib/modules/$(KVER)/build
+MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
+INSTALL_PREFIX :=
+endif
 
 ifneq ($(USER_MODULE_NAME),)
 MODULE_NAME := $(USER_MODULE_NAME)
